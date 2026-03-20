@@ -1,0 +1,29 @@
+.page    { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+.filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--text-secondary);
+  transition: all 0.15s;
+}
+.chip:hover  { border-color: var(--orange); color: var(--orange); }
+.active      { background: var(--orange) !important; color: white !important; border-color: var(--orange) !important; }
+
+.count       { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+
+.masonry     { columns: 3; gap: 12px; }
+@media (max-width: 768px) { .masonry { columns: 2; } }
+@media (max-width: 480px) { .masonry { columns: 1; } }
+
+.empty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+.empty p:first-child { font-size: 18px; margin-bottom: 8px; }
+.empty p:last-child  { font-size: 14px; }
