@@ -29,6 +29,11 @@ const listingSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Owner is required"],
+    },
     userEmail: {
       type: String,
       required: [true, "User email is required"],
@@ -47,6 +52,7 @@ const listingSchema = new mongoose.Schema(
 );
 
 // Index for faster queries
+listingSchema.index({ owner: 1 });
 listingSchema.index({ userEmail: 1 });
 listingSchema.index({ category: 1 });
 listingSchema.index({ createdAt: -1 });
