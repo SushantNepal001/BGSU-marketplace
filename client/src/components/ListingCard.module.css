@@ -1,0 +1,80 @@
+.card {
+  display: block;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  transition: transform 0.15s, box-shadow 0.15s;
+  break-inside: avoid;
+  margin-bottom: 12px;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* Image */
+.imgWrap { position: relative; }
+.img     { width: 100%; display: block; object-fit: cover; }
+.imgPlaceholder {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  background: #f9fafb;
+}
+
+/* Badge */
+.badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  color: white;
+}
+.badgeSell  { background: var(--orange); }
+.badgeTrade { background: #7c3aed; }
+.badgeFree  { background: #16a34a; }
+
+/* Body */
+.body { padding: 10px 12px 12px; }
+
+.priceDefault {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.priceFree {
+  font-weight: 700;
+  font-size: 15px;
+  color: #16a34a;
+  margin-bottom: 2px;
+}
+.title {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.category {
+  font-size: 11px;
+  background: var(--bg);
+  color: #6b7280;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+.time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
