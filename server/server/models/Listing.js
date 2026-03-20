@@ -25,6 +25,11 @@ const listingSchema = new mongoose.Schema(
       enum: ["Books", "Furniture", "Electronics", "Housing", "Misc"],
       required: [true, "Category is required"],
     },
+    type: {
+      type: String,
+      enum: ["sell", "free", "trade"],
+      default: "sell",
+    },
     imageUrl: {
       type: String,
       default: null,

@@ -115,6 +115,7 @@ The server will start on `http://localhost:5000`
   description: String (max 1000 chars),
   price: Number (required, minimum 0),
   category: String (enum: Books, Furniture, Electronics, Housing, Misc),
+  type: String (enum: sell, free, trade; default: sell),
   imageUrl: String (optional),
   owner: ObjectId (required, ref: User),
   userEmail: String (required, denormalized owner email),
@@ -302,6 +303,7 @@ Listing ownership is always derived from the authenticated user token.
 **Optional Fields**:
 
 - `description` (String, max 1000 characters)
+- `type` (String, one of: `sell`, `free`, `trade`; defaults to `sell`)
 - `imageUrl` (String)
 
 **Request Body**:
@@ -312,6 +314,7 @@ Listing ownership is always derived from the authenticated user token.
   "description": "TP-Link Archer A7, great condition",
   "price": 35,
   "category": "Electronics",
+  "type": "sell",
   "imageUrl": "https://example.com/router.jpg"
 }
 ```
