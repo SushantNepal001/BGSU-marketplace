@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 // Import configuration and middleware
@@ -12,28 +13,39 @@ const listingsRouter = require("./routes/listings");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
 const reviewsRouter = require("./routes/reviews");
+const remixRouter = require("./routes/remix");
 
 // Initialize Express app
 const app = express();
+
+const defaultAllowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+];
+
+const envAllowedOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigins])];
 
 // ============ MIDDLEWARE ============
 // Security middleware
 app.use(helmet());
 
-const defaultOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
-];
-
-const configuredOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(",").map((origin) => origin.trim())
-  : defaultOrigins;
-
 // CORS middleware
 app.use(
   cors({
-    origin: configuredOrigins,
+    origin: (origin, callback) => {
+      // Allow non-browser requests (no Origin header) and trusted local/browser origins.
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
@@ -42,15 +54,15 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ============ DATABASE CONNECTION ============
-connectDB();
-
 // ============ API ROUTES ============
 // Health check endpoint
 app.get("/health", (req, res) => {
-  res.status(200).json({
+  const dbConnected = mongoose.connection.readyState === 1;
+
+  res.status(dbConnected ? 200 : 503).json({
     success: true,
-    message: "Server is running",
+    message: dbConnected ? "Server is running" : "Server is running, database disconnected",
+    dbConnected,
     timestamp: new Date().toISOString(),
   });
 });
@@ -60,6 +72,7 @@ app.use("/api/listings", listingsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/reviews", reviewsRouter);
+app.use("/api/remix", remixRouter);
 
 // ============ 404 HANDLER ============
 app.use((req, res) => {
@@ -75,22 +88,39 @@ app.use(errorHandler);
 
 // ============ SERVER STARTUP ============
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`
+let server;
+
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    server = app.listen(PORT, () => {
+      console.log(`
 
 ║   FALCON MARKETPLACE API Server Running   ║
 Server: http://localhost:${PORT}
 Health Check: http://localhost:${PORT}/health
   `);
-});
+    });
+  } catch (error) {
+    console.error("✗ MongoDB Connection Error:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 // ============ GRACEFUL SHUTDOWN ============
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
-  server.close(() => {
-    console.log("HTTP server closed");
+  if (server) {
+    server.close(() => {
+      console.log("HTTP server closed");
+      process.exit(0);
+    });
+  } else {
     process.exit(0);
-  });
+  }
 });
 
 module.exports = app;

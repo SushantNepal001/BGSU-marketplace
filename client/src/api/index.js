@@ -64,6 +64,13 @@ export const users = {
   getMe: () => api.get("/users/me"),
 };
 
+// ============ REMIX API ============
+export const remix = {
+  create: (payload) => api.post("/remix", payload),
+  refresh: (id) => api.post(`/remix/${id}/refresh`),
+  getById: (id) => api.get(`/remix/${id}`),
+};
+
 // ============ REVIEWS API ============
 export const reviews = {
   // Create a new review
