@@ -3,11 +3,13 @@
  * Should be used as the last middleware in the chain
  */
 const errorHandler = (err, req, res, next) => {
+  const statusCode = err.status || err.statusCode || 500;
+
   // Log error for debugging
   console.error("Error:", {
     message: err.message,
     stack: err.stack,
-    status: err.status || 500,
+    status: statusCode,
   });
 
   // Mongoose validation error
@@ -38,8 +40,8 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Custom application errors
-  if (err.status) {
-    return res.status(err.status).json({
+  if (err.status || err.statusCode) {
+    return res.status(statusCode).json({
       success: false,
       message: err.message,
     });
