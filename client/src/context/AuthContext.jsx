@@ -9,14 +9,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     // Check if user is already logged in on page load
-    const stored = localStorage.getItem("user");
+    const stored = sessionStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
     setLoading(false);
   }, []);
 
   const login = (userData, token) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("user", JSON.stringify(userData));
+    sessionStorage.setItem("token", token);
     setUser(userData);
   };
 
@@ -41,8 +41,8 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
     setUser(null);
   };
 
