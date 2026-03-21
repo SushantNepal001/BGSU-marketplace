@@ -8,7 +8,7 @@ const BADGE_COLORS = {
 }
 
 function ListingCard({ listing }) {
-  const { _id, title, price, type, category, images, createdAt } = listing
+  const { _id, title, price, type, category, imageUrl, createdAt } = listing
 
   const timeAgo = (date) => {
     const diff = (Date.now() - new Date(date)) / 1000
@@ -30,8 +30,8 @@ function ListingCard({ listing }) {
 
       {/* Image */}
       <div className={styles.imgWrap}>
-        {images?.length > 0 ? (
-          <img src={images[0]} alt={title} className={styles.img} />
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className={styles.img} />
         ) : (
           <div className={styles.imgPlaceholder}>📦</div>
         )}

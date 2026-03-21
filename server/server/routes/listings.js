@@ -69,6 +69,7 @@ router.get("/:id", async (req, res, next) => {
  * POST /api/listings
  * Create a new listing
  * Requires auth + title, price, category
+ * imageUrl is optional and comes from Cloudinary
  */
 router.post("/", protect, async (req, res, next) => {
   try {
@@ -88,7 +89,7 @@ router.post("/", protect, async (req, res, next) => {
       description,
       price,
       category,
-      imageUrl,
+      imageUrl, // URL from Cloudinary
       owner: req.user._id,
       userEmail: req.user.email,
     });

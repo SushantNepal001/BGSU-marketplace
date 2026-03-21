@@ -33,10 +33,13 @@ export const listings = {
     api.get(`/listings/${id}`),
   
   // Create new listing
+  // Data should be: { title, description, price, category, imageUrl }
+  // imageUrl is from Cloudinary upload (string URL)
   create: (data) =>
     api.post('/listings', data),
   
   // Update listing
+  // Data should be: { title, description, price, category, imageUrl? }
   update: (id, data) =>
     api.put(`/listings/${id}`, data),
   

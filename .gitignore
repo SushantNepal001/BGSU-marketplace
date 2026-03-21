@@ -22,3 +22,7 @@ coverage/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Uploaded files
+/uploads
+/server/uploads
