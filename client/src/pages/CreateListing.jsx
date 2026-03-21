@@ -6,6 +6,11 @@ import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
 import styles from './CreateListing.module.css'
 
 const CATEGORIES = ['Books', 'Electronics', 'Furniture', 'Housing', 'Misc']
+const LISTING_TYPES = [
+  { value: 'sell', label: 'Sell' },
+  { value: 'trade', label: 'Trade' },
+  { value: 'free', label: 'Free' },
+]
 
 function CreateListing() {
   const navigate = useNavigate()
@@ -18,9 +23,10 @@ function CreateListing() {
     description: '',
     price: '',
     category: 'Books',
+    type: 'sell',
   })
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState(null)
+  const [imageFiles, setImageFiles] = useState([]) // Array for multiple images
+  const [imagePreviews, setImagePreviews] = useState([]) // Array of previews
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
 
   // Redirect if not logged in
@@ -40,26 +46,47 @@ function CreateListing() {
   }
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
+    const files = Array.from(e.target.files)
+    
+    // Max 5 images
+    if (files.length + imageFiles.length > 5) {
+      alert(`Maximum 5 images allowed. You can add ${5 - imageFiles.length} more.`)
+      return
+    }
+
+    const newFiles = []
+    const newPreviews = []
+
+    files.forEach(file => {
       // Validate file is an image
       if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file')
+        alert(`${file.name} is not a valid image file`)
         return
       }
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Image must be less than 10MB')
+        alert(`${file.name} is larger than 10MB`)
         return
       }
-      setImageFile(file)
+
+      newFiles.push(file)
+
       // Create preview
       const reader = new FileReader()
       reader.onloadend = () => {
-        setImagePreview(reader.result)
+        newPreviews.push(reader.result)
+        if (newPreviews.length === newFiles.length) {
+          setImageFiles(prev => [...prev, ...newFiles])
+          setImagePreviews(prev => [...prev, ...newPreviews])
+        }
       }
       reader.readAsDataURL(file)
-    }
+    })
+  }
+
+  const removeImage = (index) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index))
+    setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e) => {
@@ -67,32 +94,47 @@ function CreateListing() {
     try {
       clearMessages()
       
-      // Image is now required
-      if (!imageFile) {
+      // Images are now required
+      if (imageFiles.length === 0) {
         setAttemptedSubmit(true)
-        alert('Please upload an image before creating the listing')
+        alert('Please upload at least one image before creating the listing')
         return
       }
       
-      let imageUrl = null
+      // Upload all images to Cloudinary
+      console.log(`Starting Cloudinary upload for ${imageFiles.length} images...`)
+      const imageUrls = []
       
-      // Upload image to Cloudinary
-      console.log('Starting Cloudinary upload...')
-      imageUrl = await uploadImage(imageFile)
-      console.log('Image URL from Cloudinary:', imageUrl)
-      
-      if (!imageUrl) {
-        alert('Failed to upload image to Cloudinary. Check console for details.')
+      for (const file of imageFiles) {
+        try {
+          const url = await uploadImage(file)
+          if (url) {
+            imageUrls.push(url)
+          }
+        } catch (err) {
+          console.error(`Failed to upload image:`, err)
+        }
+      }
+
+      if (imageUrls.length === 0) {
+        alert('Failed to upload images to Cloudinary. Check console for details.')
         return
       }
 
-      // Send listing data with imageUrl to backend
+      console.log(`✅ Uploaded ${imageUrls.length}/${imageFiles.length} images`)
+
+      // Send listing data with images array to backend
       const listingData = {
         title: formData.title,
         description: formData.description,
-        price: parseFloat(formData.price), // Convert to number
         category: formData.category,
-        imageUrl: imageUrl, // Just the URL string
+        type: formData.type,
+        images: imageUrls, // Array of image URLs from Cloudinary
+      }
+
+      // Only include price for sell type
+      if (formData.type === 'sell') {
+        listingData.price = parseFloat(formData.price) || 0
       }
 
       console.log('Sending to backend:', listingData)
@@ -136,6 +178,23 @@ function CreateListing() {
               />
             </div>
 
+            {/* Listing Type */}
+            <div className={styles.field}>
+              <label>Listing Type *</label>
+              <div className={styles.typeButtons}>
+                {LISTING_TYPES.map(t => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    className={`${styles.typeBtn} ${formData.type === t.value ? styles.active : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, type: t.value }))}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Description */}
             <div className={styles.field}>
               <label htmlFor="description">Description</label>
@@ -168,47 +227,56 @@ function CreateListing() {
             </div>
 
             {/* Price */}
-            <div className={styles.field}>
-              <label htmlFor="price">Price ($) *</label>
-              <input
-                id="price"
-                type="number"
-                name="price"
-                placeholder="Enter price"
-                value={formData.price}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                required
-              />
-            </div>
+            {formData.type === 'sell' && (
+              <div className={styles.field}>
+                <label htmlFor="price">Price ($) *</label>
+                <input
+                  id="price"
+                  type="number"
+                  name="price"
+                  placeholder="Enter price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+            )}
 
             {/* Image Upload */}
             <div className={styles.field}>
-              <label htmlFor="image">Upload Image *</label>
+              <label htmlFor="images">Upload Images (Max 5) *</label>
               <input
-                id="image"
+                id="images"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                multiple
                 required
               />
-              <p className={styles.hint}>Max 10MB. Supported: JPEG, PNG, WebP, GIF. Image is required.</p>
+              <p className={styles.hint}>Max 10MB per image. Supported: JPEG, PNG, WebP, GIF. At least 1 image is required. Max 5 images allowed.</p>
               
-              {/* Image Preview */}
-              {imagePreview && (
-                <div className={styles.preview}>
-                  <img src={imagePreview} alt="Preview" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setImageFile(null)
-                      setImagePreview(null)
-                    }}
-                    className={styles.removeImage}
-                  >
-                    Remove Image
-                  </button>
+              {/* Image Previews Gallery */}
+              {imagePreviews.length > 0 && (
+                <div className={styles.previewGallery}>
+                  <p className={styles.imageCount}>{imagePreviews.length} of 5 images selected</p>
+                  <div className={styles.previewGrid}>
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className={styles.previewItem}>
+                        <img src={preview} alt={`Preview ${index + 1}`} />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className={styles.removeBtn}
+                          title="Remove this image"
+                        >
+                          ✕
+                        </button>
+                        <span className={styles.imageIndex}>{index + 1}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -216,11 +284,11 @@ function CreateListing() {
             {/* Messages */}
             {error && <p className={styles.error}>{error}</p>}
             {success && <p className={styles.successMsg}>{success}</p>}
-            {attemptedSubmit && !imageFile && <p className={styles.error}>⚠️ Please upload an image to create a listing</p>}
+            {attemptedSubmit && imageFiles.length === 0 && <p className={styles.error}>⚠️ Please upload at least one image to create a listing</p>}
 
             {/* Submit */}
-            <button type="submit" disabled={loading || uploading || !imageFile} className={styles.btn}>
-              {uploading ? 'Uploading image...' : loading ? 'Creating listing...' : 'Create Listing'}
+            <button type="submit" disabled={loading || uploading || imageFiles.length === 0} className={styles.btn}>
+              {uploading ? 'Uploading images...' : loading ? 'Creating listing...' : 'Create Listing'}
             </button>
           </form>
         </div>

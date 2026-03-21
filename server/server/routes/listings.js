@@ -297,14 +297,22 @@ router.get("/:id", async (req, res, next) => {
  */
 router.post("/", protect, async (req, res, next) => {
   try {
-    const { title, price, category, images } = req.body;
+    const { title, category, type, images } = req.body;
     const imageList = Array.isArray(images) ? images : [];
 
     // Validate required fields
-    if (!title || !price || !category) {
+    if (!title || !category) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: title, price, category",
+        message: "Missing required fields: title, category",
+      });
+    }
+
+    // Price is only required for 'sell' type
+    if (type === 'sell' && (!req.body.price || req.body.price <= 0)) {
+      return res.status(400).json({
+        success: false,
+        message: "Price is required and must be greater than 0 for sell listings",
       });
     }
 
