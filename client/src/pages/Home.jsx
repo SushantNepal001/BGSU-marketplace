@@ -1,62 +1,71 @@
 import { useState } from 'react'
 import ListingCard from '../components/ListingCard'
+import SearchBar from '../components/SearchBar'
+import useListings from '../hooks/useListings'
+import { useSearch } from '../hooks/useSearch'
 import styles from './Home.module.css'
 
-// Temporary fake data until the backend is ready
-const MOCK_LISTINGS = [
-  { _id: '1', title: 'MacBook Air M1 — great condition', price: 280, type: 'sell', category: 'Electronics', images: [], createdAt: new Date(Date.now() - 7200000) },
-  { _id: '2', title: 'Organic Chemistry textbook 5th Ed — trade for Calc book', price: 0, type: 'trade', category: 'Books', images: [], createdAt: new Date(Date.now() - 18000000) },
-  { _id: '3', title: 'IKEA desk chair — moving out, must go', price: 0, type: 'free', category: 'Furniture', images: [], createdAt: new Date(Date.now() - 86400000) },
-  { _id: '4', title: 'PS5 controller — used twice', price: 45, type: 'sell', category: 'Electronics', images: [], createdAt: new Date(Date.now() - 10800000) },
-  { _id: '5', title: 'BGSU hoodie size M — worn once', price: 15, type: 'sell', category: 'Clothing', images: [], createdAt: new Date(Date.now() - 21600000) },
-  { _id: '6', title: '24" monitor — HDMI + DisplayPort, perfect for dorm', price: 120, type: 'sell', category: 'Electronics', images: [], createdAt: new Date(Date.now() - 172800000) },
-]
-
-const CATEGORIES = ['All', 'Books', 'Electronics', 'Furniture', 'Clothing', 'Other']
+const CATEGORIES = ['All', 'Books', 'Electronics', 'Furniture', 'Housing', 'Misc']
 
 function Home() {
   const [activeCategory, setActiveCategory] = useState('All')
-  const [searchQuery, setSearchQuery]       = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
 
-  const filtered = MOCK_LISTINGS.filter((l) => {
-    const matchesCategory = activeCategory === 'All' || l.category === activeCategory
-    const matchesSearch   = l.title.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+  // Search results from backend
+  const { results: searchResults, loading: searchLoading, error: searchError } = useSearch(searchQuery)
+
+  // Browse listings with category filter
+  const filters = activeCategory !== 'All' ? { category: activeCategory } : {}
+  const { listings, loading: browseLoading, error: browseError } = useListings(filters)
+
+  // Show search results if searching, otherwise show category browse
+  const isSearching = searchQuery.trim().length > 0
+  const displayListings = isSearching ? searchResults : listings
+  const loading = isSearching ? searchLoading : browseLoading
+  const error = isSearching ? searchError : browseError
 
   return (
     <div className={styles.page}>
+      {/* Search bar */}
+      <SearchBar value={searchQuery} onChange={setSearchQuery} loading={searchLoading} />
 
-      {/* Category filter chips */}
-      <div className={styles.filters}>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            className={`${styles.chip} ${activeCategory === cat ? styles.active : ''}`}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Results count */}
-      <p className={styles.count}>{filtered.length} listings</p>
-
-      {/* Masonry grid */}
-      {filtered.length > 0 ? (
-        <div className={styles.masonry}>
-          {filtered.map((listing) => (
-            <ListingCard key={listing._id} listing={listing} />
+      {/* Category filter chips - only show when not searching */}
+      {!isSearching && (
+        <div className={styles.filters}>
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              className={`${styles.chip} ${activeCategory === cat ? styles.active : ''}`}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat}
+            </button>
           ))}
-        </div>
-      ) : (
-        <div className={styles.empty}>
-          <p>No listings found 😕</p>
-          <p>Try a different category or search term</p>
         </div>
       )}
 
+      {/* Results count */}
+      {loading && <p className={styles.count}>Loading listings...</p>}
+      {error && <p className={styles.count} style={{ color: 'red' }}>Error: {error}</p>}
+      {!loading && !error && (
+        <p className={styles.count}>
+          {isSearching ? `Found ${displayListings.length} result(s)` : `${displayListings.length} listings`}
+        </p>
+      )}
+
+      {/* Masonry grid */}
+      {!loading && displayListings.length > 0 ? (
+        <div className={styles.masonry}>
+          {displayListings.map((listing) => (
+            <ListingCard key={listing._id} listing={listing} />
+          ))}
+        </div>
+      ) : !loading ? (
+        <div className={styles.empty}>
+          <p>No listings found 😕</p>
+          <p>Try a different {isSearching ? 'search term' : 'category'}</p>
+        </div>
+      ) : null}
     </div>
   )
 }

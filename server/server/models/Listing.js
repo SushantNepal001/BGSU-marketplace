@@ -16,9 +16,17 @@ const listingSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: [true, "Price is required"],
+      default: null,
       min: [0, "Price must be positive"],
       max: [999999, "Price is too high"],
+      validate: {
+        validator: function(value) {
+          // Price is required only for 'sell' type
+          if (this.type === 'sell') return value != null && value > 0;
+          return true; // For 'free' and 'trade' types, price is optional
+        },
+        message: "Price is required for sell listings",
+      },
     },
     category: {
       type: String,

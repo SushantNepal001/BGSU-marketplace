@@ -30,7 +30,7 @@ function ListingCard({ listing }) {
 
       {/* Image */}
       <div className={styles.imgWrap}>
-        {images?.length > 0 ? (
+        {images && images.length > 0 ? (
           <img src={images[0]} alt={title} className={styles.img} />
         ) : (
           <div className={styles.imgPlaceholder}>📦</div>

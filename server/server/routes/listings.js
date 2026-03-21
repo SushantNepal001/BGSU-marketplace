@@ -264,6 +264,27 @@ router.get("/search", async (req, res, next) => {
 });
 
 /**
+ * GET /api/listings/me/all
+ * Get listings for the currently authenticated user
+ */
+router.get("/me/all", protect, async (req, res, next) => {
+  try {
+    const listings = await Listing.find({ owner: req.user._id })
+      .populate("owner", "name email")
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return res.status(200).json({
+      success: true,
+      count: listings.length,
+      data: listings,
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+/**
  * GET /api/listings/:id
  * Get a single listing by ID
  */
@@ -293,17 +314,27 @@ router.get("/:id", async (req, res, next) => {
  * POST /api/listings
  * Create a new listing
  * Requires auth + title, price, category
+ * imageUrl is optional and comes from Cloudinary
  */
 router.post("/", protect, async (req, res, next) => {
   try {
-    const { title, price, category, images } = req.body;
+    const { title, category, type, images } = req.body;
     const imageList = Array.isArray(images) ? images : [];
 
     // Validate required fields
-    if (!title || !price || !category) {
+    if (!title || !category) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: title, price, category",
+        message: "Missing required fields: title, category",
+      });
+    }
+
+    // Price is only required for 'sell' type
+    if (type === "sell" && (!req.body.price || req.body.price <= 0)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Price is required and must be greater than 0 for sell listings",
       });
     }
 
