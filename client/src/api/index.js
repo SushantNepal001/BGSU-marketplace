@@ -71,4 +71,25 @@ export const remix = {
   getById: (id) => api.get(`/remix/${id}`),
 };
 
+// ============ REVIEWS API ============
+export const reviews = {
+  // Create a new review
+  create: (data) => api.post("/reviews", data),
+
+  // Get all reviews for a listing with aggregated stats
+  getListingReviews: (listingId) => api.get(`/reviews/listing/${listingId}`),
+
+  // Get single review by ID
+  getById: (reviewId) => api.get(`/reviews/${reviewId}`),
+
+  // Update a review
+  update: (reviewId, data) => api.put(`/reviews/${reviewId}`, data),
+
+  // Delete a review
+  delete: (reviewId) => api.delete(`/reviews/${reviewId}`),
+
+  // Get seller's average rating and stats
+  getSellerRating: (sellerId) => api.get(`/reviews/seller/${sellerId}`),
+};
+
 export default api;

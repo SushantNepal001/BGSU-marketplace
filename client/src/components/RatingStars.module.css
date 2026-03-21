@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  font-size: 1.5rem;
+  color: #ddd;
+  cursor: default;
+  transition: color 0.2s;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.star.half {
+  color: #ffc107;
+  opacity: 0.5;
+}
+
+.star.interactive {
+  cursor: pointer;
+}
+
+.star.interactive:hover {
+  color: #ffc107;
+  transform: scale(1.2);
+}
+
+.count {
+  font-size: 0.875rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.small .star {
+  font-size: 1rem;
+}
+
+.large .star {
+  font-size: 2rem;
+}
