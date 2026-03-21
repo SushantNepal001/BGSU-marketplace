@@ -7,7 +7,7 @@ const BADGE_COLORS = {
   free:  styles.badgeFree,
 }
 
-function ListingCard({ listing }) {
+function ListingCard({ listing, onPreviewTrailer, previewLoadingId }) {
   const { _id, title, price, type, category, images, createdAt } = listing
 
   const timeAgo = (date) => {
@@ -24,33 +24,47 @@ function ListingCard({ listing }) {
   }
 
   const { label, className } = displayPrice()
+  const isPreviewLoading = previewLoadingId === _id
 
   return (
-    <Link to={`/listings/${_id}`} className={styles.card}>
+    <div className={styles.card}>
+      <Link to={`/listings/${_id}`} className={styles.cardLink}>
 
-      {/* Image */}
-      <div className={styles.imgWrap}>
-        {images && images.length > 0 ? (
-          <img src={images[0]} alt={title} className={styles.img} />
-        ) : (
-          <div className={styles.imgPlaceholder}>📦</div>
-        )}
-        <span className={`${styles.badge} ${BADGE_COLORS[type]}`}>
-          {type.charAt(0).toUpperCase() + type.slice(1)}
-        </span>
-      </div>
-
-      {/* Info */}
-      <div className={styles.body}>
-        <div className={className}>{label}</div>
-        <div className={styles.title}>{title}</div>
-        <div className={styles.meta}>
-          <span className={styles.category}>{category}</span>
-          <span className={styles.time}>{timeAgo(createdAt)}</span>
+        {/* Image */}
+        <div className={styles.imgWrap}>
+          {images && images.length > 0 ? (
+            <img src={images[0]} alt={title} className={styles.img} />
+          ) : (
+            <div className={styles.imgPlaceholder}>📦</div>
+          )}
+          <span className={`${styles.badge} ${BADGE_COLORS[type]}`}>
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </span>
         </div>
+
+        {/* Info */}
+        <div className={styles.body}>
+          <div className={className}>{label}</div>
+          <div className={styles.title}>{title}</div>
+          <div className={styles.meta}>
+            <span className={styles.category}>{category}</span>
+            <span className={styles.time}>{timeAgo(createdAt)}</span>
+          </div>
+        </div>
+      </Link>
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.previewBtn}
+          onClick={() => onPreviewTrailer?.(listing)}
+          disabled={isPreviewLoading}
+        >
+          {isPreviewLoading ? 'Generating...' : 'Preview AI Trailer'}
+        </button>
       </div>
 
-    </Link>
+    </div>
   )
 }
 

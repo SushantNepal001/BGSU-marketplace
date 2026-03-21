@@ -24,7 +24,7 @@ function App() {
       <Route path="/remix/studio"   element={<RemixStudio />} />
     </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

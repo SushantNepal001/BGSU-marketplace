@@ -1,30 +1,30 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import styles from './Login.module.css'
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import styles from "./Login.module.css";
 
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-  const { loginUser } = useAuth()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { loginUser } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setError('')
-      setLoading(true)
-      await loginUser(email, password)
-      navigate('/')
+      setError("");
+      setLoading(true);
+      await loginUser(email, password);
+      navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed')
-      console.error('Login error:', err)
+      setError(err.response?.data?.message || "Login failed");
+      console.error("Login error:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className={styles.page}>
@@ -66,7 +66,7 @@ function Login() {
             {error && <p className={styles.error}>{error}</p>}
 
             <button type="submit" disabled={loading} className={styles.btn}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
@@ -77,7 +77,7 @@ function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
