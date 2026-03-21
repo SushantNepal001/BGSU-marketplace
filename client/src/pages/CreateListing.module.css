@@ -289,3 +289,31 @@ h1 {
   align-items: center;
   justify-content: center;
 }
+
+.buttonGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btnSecondary {
+  padding: 11px 16px;
+  background: #f3f4f6;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.btnSecondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

@@ -211,9 +211,15 @@
   color: white;
 }
 
-.btnPrimary:hover {
+.btnPrimary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btnDanger {
@@ -221,9 +227,15 @@
   color: white;
 }
 
-.btnDanger:hover {
+.btnDanger:hover:not(:disabled) {
   background: #ff5252;
   transform: translateY(-2px);
+}
+
+.btnDanger:disabled {
+  background: #ffb3b3;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* Loading & Error */
@@ -260,6 +272,55 @@
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Reviews Section */
+.reviewsSection {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  margin-top: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.loginPrompt {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  color: #1565c0;
+}
+
+.loginPrompt p {
+  margin: 0;
+}
+
+.inlineLink {
+  background: none;
+  border: none;
+  color: #1565c0;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 0;
+}
+
+.inlineLink:hover {
+  color: #0d47a1;
+}
+
+.ownerNote {
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  color: #e65100;
+}
+
+.ownerNote p {
+  margin: 0;
 }
 
 /* Responsive */

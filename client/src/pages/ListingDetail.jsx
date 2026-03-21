@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { listings } from '../api'
 import { useAuth } from '../context/AuthContext'
+import ReviewForm from '../components/ReviewForm'
+import ReviewList from '../components/ReviewList'
 import styles from './ListingDetail.module.css'
 
 function ListingDetail() {
@@ -11,6 +13,8 @@ function ListingDetail() {
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [reviewRefresh, setReviewRefresh] = useState(0)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -29,6 +33,28 @@ function ListingDetail() {
 
     fetchListing()
   }, [id])
+
+  const handleDeleteListing = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this listing? This action cannot be undone.'
+    )
+    
+    if (!confirmed) return
+
+    try {
+      setDeleting(true)
+      await listings.delete(id)
+      
+      // Redirect to home after successful deletion
+      setTimeout(() => {
+        navigate('/', { replace: true })
+      }, 1000)
+    } catch (err) {
+      console.error('Error deleting listing:', err)
+      alert(err.response?.data?.message || 'Failed to delete listing')
+      setDeleting(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -136,8 +162,19 @@ function ListingDetail() {
             <div className={styles.actions}>
               {isOwner ? (
                 <>
-                  <button className={styles.btnPrimary}>Edit Listing</button>
-                  <button className={styles.btnDanger}>Delete Listing</button>
+                  <button 
+                    className={styles.btnPrimary}
+                    onClick={() => navigate(`/listings/${id}/edit`)}
+                  >
+                    Edit Listing
+                  </button>
+                  <button 
+                    className={styles.btnDanger}
+                    onClick={handleDeleteListing}
+                    disabled={deleting}
+                  >
+                    {deleting ? 'Deleting...' : 'Delete Listing'}
+                  </button>
                 </>
               ) : user ? (
                 <button className={styles.btnPrimary}>Contact Seller</button>
@@ -151,6 +188,30 @@ function ListingDetail() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className={styles.reviewsSection}>
+          <ReviewList 
+            listingId={id} 
+            refreshTrigger={reviewRefresh}
+          />
+
+          {user && !isOwner ? (
+            <ReviewForm 
+              listingId={id} 
+              sellerId={listing.owner._id}
+              onReviewSubmitted={() => setReviewRefresh(prev => prev + 1)}
+            />
+          ) : !user ? (
+            <div className={styles.loginPrompt}>
+              <p>Please <button onClick={() => navigate('/login')} className={styles.inlineLink}>sign in</button> to leave a review.</p>
+            </div>
+          ) : (
+            <div className={styles.ownerNote}>
+              <p>You cannot review your own listing.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ const errorHandler = require("./middleware/errorHandler");
 const listingsRouter = require("./routes/listings");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
+const reviewsRouter = require("./routes/reviews");
 
 // Initialize Express app
 const app = express();
@@ -58,6 +59,7 @@ app.get("/health", (req, res) => {
 app.use("/api/listings", listingsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/reviews", reviewsRouter);
 
 // ============ 404 HANDLER ============
 app.use((req, res) => {

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 import ListingDetail from "./pages/ListingDetail";
 import Profile from "./pages/Profile";
 import Inbox from "./pages/Inbox";
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/listings/new" element={<CreateListing />} />
         <Route path="/listings/:id" element={<ListingDetail />} />
+        <Route path="/listings/:id/edit" element={<EditListing />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/inbox" element={<Inbox />} />
       </Routes>
