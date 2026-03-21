@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import api from '../api'
+import { listings as listingsAPI } from '../api'
 
 function useListings(filters = {}) {
   const [listings, setListings] = useState([])
@@ -10,31 +10,24 @@ function useListings(filters = {}) {
     const fetchListings = async () => {
       try {
         setLoading(true)
+        setError(null)
 
-        // Build query string from filters
-        const params = new URLSearchParams()
-        if (filters.category && filters.category !== 'All') {
-          params.append('category', filters.category)
-        }
-        if (filters.search) {
-          params.append('search', filters.search)
-        }
-
-        const res = await api.get(`/listings?${params.toString()}`)
+        const res = await listingsAPI.getAll(filters)
         
-        // His API wraps the array inside res.data.data
+        // API wraps the array inside res.data.data
         setListings(res.data.data)
 
       } catch (err) {
-        setError('Failed to load listings')
-        console.error(err)
+        const errorMsg = err.response?.data?.message || err.message || 'Failed to load listings'
+        setError(errorMsg)
+        console.error('API Error:', err)
       } finally {
         setLoading(false)
       }
     }
 
     fetchListings()
-  }, [filters.category, filters.search])
+  }, [JSON.stringify(filters)])
 
   return { listings, loading, error }
 }
