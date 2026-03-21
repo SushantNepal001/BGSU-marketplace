@@ -65,13 +65,10 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`
-╔═══════════════════════════════════════════════╗
-║   🦅 FALCON MARKETPLACE API Server Running   ║
-╚═══════════════════════════════════════════════╝
-📍 Server: http://localhost:${PORT}
-📝 Health Check: http://localhost:${PORT}/health
-🔗 Listings API: http://localhost:${PORT}/api/listings
-🔐 Auth API: http://localhost:${PORT}/api/auth
+
+║   FALCON MARKETPLACE API Server Running   ║
+Server: http://localhost:${PORT}
+Health Check: http://localhost:${PORT}/health
   `);
 });
 

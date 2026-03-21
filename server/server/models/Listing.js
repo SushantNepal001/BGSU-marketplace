@@ -30,9 +30,13 @@ const listingSchema = new mongoose.Schema(
       enum: ["sell", "free", "trade"],
       default: "sell",
     },
-    imageUrl: {
-      type: String,
-      default: null,
+    images: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: (value) => Array.isArray(value) && value.length <= 5,
+        message: "A maximum of 5 image URLs is allowed",
+      },
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
