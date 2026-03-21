@@ -7,6 +7,7 @@ import CreateListing from './pages/CreateListing'
 import ListingDetail from './pages/ListingDetail'
 import Profile from './pages/Profile'
 import Inbox from './pages/Inbox'
+import RemixStudio from './pages/RemixStudio'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/listings/:id"   element={<ListingDetail />} />
       <Route path="/profile"        element={<Profile />} />
       <Route path="/inbox"          element={<Inbox />} />
+      <Route path="/remix/studio"   element={<RemixStudio />} />
     </Routes>
     </>
   )

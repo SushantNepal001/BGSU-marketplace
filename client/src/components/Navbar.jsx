@@ -26,6 +26,9 @@ function Navbar() {
       <div className={styles.actions}>
         {user ? (
           <>
+            <Link to="/remix/studio" className={styles.btnPost}>
+              AI Remix
+            </Link>
             <Link to="/listings/new" className={styles.btnPost}>
               + Post Listing
             </Link>
