@@ -1,75 +1,67 @@
-import axios from 'axios'
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   withCredentials: true,
-})
+});
 
 // Attach JWT token to every request automatically
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
 // ============ AUTH API ============
 export const auth = {
   register: (name, email, password) =>
-    api.post('/auth/register', { name, email, password }),
-  login: (email, password) =>
-    api.post('/auth/login', { email, password }),
-}
+    api.post("/auth/register", { name, email, password }),
+  login: (email, password) => api.post("/auth/login", { email, password }),
+};
 
 // ============ LISTINGS API ============
 export const listings = {
   // Get all listings with optional filters
-  getAll: (filters = {}) =>
-    api.get('/listings', { params: filters }),
-  
+  getAll: (filters = {}) => api.get("/listings", { params: filters }),
+
   // Search listings with advanced filters
   // Parameters: q (query), category, minPrice, maxPrice, page, limit
   search: (query, filters = {}) =>
-    api.get('/listings/search', { params: { q: query, ...filters } }),
-  
+    api.get("/listings/search", { params: { q: query, ...filters } }),
+
   // Get single listing by ID
-  getById: (id) =>
-    api.get(`/listings/${id}`),
-  
+  getById: (id) => api.get(`/listings/${id}`),
+
   // Create new listing
   // Data should be: { title, description, price, category, imageUrl }
   // imageUrl is from Cloudinary upload (string URL)
-  create: (data) =>
-    api.post('/listings', data),
-  
+  create: (data) => api.post("/listings", data),
+
   // Update listing
   // Data should be: { title, description, price, category, imageUrl? }
-  update: (id, data) =>
-    api.put(`/listings/${id}`, data),
-  
+  update: (id, data) => api.put(`/listings/${id}`, data),
+
   // Delete single listing
-  delete: (id) =>
-    api.delete(`/listings/${id}`),
-  
+  delete: (id) => api.delete(`/listings/${id}`),
+
   // Admin: Delete all listings
-  deleteAll: () =>
-    api.delete('/listings/admin/all'),
-}
+  deleteAll: () => api.delete("/listings/admin/all"),
+  // Get current user's listings (requires auth)
+  getMyListings: () => api.get("/listings/me/all"),
+};
 
 // ============ USERS API ============
 export const users = {
   // Get all users
-  getAll: () =>
-    api.get('/users'),
-  
-  // Get all users with their listings
-  getAllWithListings: () =>
-    api.get('/users/with-listings'),
-  
-  // Get current logged-in user
-  getMe: () =>
-    api.get('/users/me'),
-}
+  getAll: () => api.get("/users"),
 
-export default api
+  // Get all users with their listings
+  getAllWithListings: () => api.get("/users/with-listings"),
+
+  // Get current logged-in user
+  getMe: () => api.get("/users/me"),
+};
+
+export default api;

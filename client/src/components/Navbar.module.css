@@ -35,7 +35,9 @@
   font-size: 15px;
   color: var(--text-primary);
 }
-.name span { color: var(--orange); }
+.name span {
+  color: var(--orange);
+}
 
 /* Search */
 .searchWrap {
@@ -87,7 +89,9 @@
   white-space: nowrap;
   transition: background 0.15s;
 }
-.btnPost:hover { background: var(--orange-dark); }
+.btnPost:hover {
+  background: var(--orange-dark);
+}
 
 /* Avatar + dropdown */
 .avatarWrap {
@@ -106,20 +110,38 @@
   color: var(--orange);
   cursor: pointer;
   border: 1.5px solid #fbd0b0;
+  transition: background 0.15s;
+}
+.avatar:hover {
+  background: #ffb366;
 }
 .dropdown {
   display: none;
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 2px);
   right: 0;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   min-width: 150px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
 }
-.avatarWrap:hover .dropdown { display: flex; flex-direction: column; }
+/* Invisible bridge to prevent hover from breaking */
+.avatarWrap::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 150px;
+  height: 8px;
+  pointer-events: auto;
+}
+.avatarWrap:hover .dropdown {
+  display: flex;
+  flex-direction: column;
+}
 .dropdown a,
 .dropdown button {
   padding: 10px 14px;
@@ -129,6 +151,8 @@
   border: none;
   text-align: left;
   width: 100%;
+  cursor: pointer;
+  transition: background 0.1s;
 }
 .dropdown a:hover,
 .dropdown button:hover {
