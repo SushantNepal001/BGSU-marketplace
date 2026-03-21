@@ -19,10 +19,20 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
+const defaultOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+];
+
+const configuredOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(",").map((origin) => origin.trim())
+  : defaultOrigins;
+
 // CORS middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || ["http://localhost:5173", "http://localhost:5174"],
+    origin: configuredOrigins,
     credentials: true,
   }),
 );

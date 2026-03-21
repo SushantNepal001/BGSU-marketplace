@@ -1,93 +1,94 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import styles from './Register.module.css'
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import styles from "./Register.module.css";
 
 function Register() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-  const { registerUser } = useAuth()
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { registerUser } = useAuth();
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const validateForm = () => {
     // Check name
     if (!formData.name.trim()) {
-      setError('Name is required')
-      return false
+      setError("Name is required");
+      return false;
     }
 
     if (formData.name.trim().length < 2) {
-      setError('Name must be at least 2 characters')
-      return false
+      setError("Name must be at least 2 characters");
+      return false;
     }
 
     // Check email
     if (!formData.email.trim()) {
-      setError('Email is required')
-      return false
+      setError("Email is required");
+      return false;
     }
 
-    if (!formData.email.endsWith('@bgsu.edu')) {
-      setError('Please use your BGSU email (e.g., john@bgsu.edu)')
-      return false
+    if (!formData.email.endsWith("@bgsu.edu")) {
+      setError("Please use your BGSU email (e.g., john@bgsu.edu)");
+      return false;
     }
 
     // Check password
     if (!formData.password) {
-      setError('Password is required')
-      return false
+      setError("Password is required");
+      return false;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
-      return false
+      setError("Password must be at least 6 characters");
+      return false;
     }
 
     // Check confirm password
     if (!formData.confirmPassword) {
-      setError('Please confirm your password')
-      return false
+      setError("Please confirm your password");
+      return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      return false
+      setError("Passwords do not match");
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      return
+      return;
     }
 
     try {
-      setError('')
-      setLoading(true)
-      await registerUser(formData.name, formData.email, formData.password)
-      navigate('/')
+      setError("");
+      setLoading(true);
+      await registerUser(formData.name, formData.email, formData.password);
+      navigate("/");
     } catch (err) {
-      const message = err.response?.data?.message || err.message || 'Sign up failed'
-      setError(message)
-      console.error('Register error:', err)
+      const message =
+        err.response?.data?.message || err.message || "Sign up failed";
+      setError(message);
+      console.error("Register error:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className={styles.page}>
@@ -163,7 +164,7 @@ function Register() {
 
             {/* Submit */}
             <button type="submit" disabled={loading} className={styles.btn}>
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? "Creating account..." : "Sign Up"}
             </button>
           </form>
 
@@ -179,7 +180,7 @@ function Register() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;

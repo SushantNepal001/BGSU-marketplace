@@ -1,5 +1,6 @@
 const express = require("express");
 const protect = require("../middleware/auth");
+const requireAdmin = require("../middleware/admin");
 const Listing = require("../models/Listing");
 const User = require("../models/User");
 
@@ -77,6 +78,48 @@ router.get("/me", protect, async (req, res) => {
     success: true,
     data: req.user,
   });
+});
+
+/**
+ * DELETE /api/users/admin/all
+ * Delete all non-admin users and their listings (admin only)
+ */
+router.delete("/admin/all", protect, requireAdmin, async (req, res, next) => {
+  try {
+    const configuredAdmins = String(process.env.ADMIN_EMAILS || "")
+      .split(",")
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean);
+
+    const usersToDelete = await User.find({
+      email: { $nin: configuredAdmins },
+    })
+      .select("_id email")
+      .lean();
+
+    const userIdsToDelete = usersToDelete.map((user) => user._id);
+    const userEmailsToDelete = usersToDelete.map((user) => user.email);
+
+    const deletedUsersResult = await User.deleteMany({
+      _id: { $in: userIdsToDelete },
+    });
+
+    const deletedListingsResult = await Listing.deleteMany({
+      $or: [
+        { owner: { $in: userIdsToDelete } },
+        { userEmail: { $in: userEmailsToDelete } },
+      ],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "All non-admin users and their listings deleted successfully",
+      deletedUsersCount: deletedUsersResult.deletedCount,
+      deletedListingsCount: deletedListingsResult.deletedCount,
+    });
+  } catch (error) {
+    return next(error);
+  }
 });
 
 module.exports = router;
