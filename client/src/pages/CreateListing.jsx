@@ -21,6 +21,7 @@ function CreateListing() {
   })
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
 
   // Redirect if not logged in
   if (!user) {
@@ -66,18 +67,23 @@ function CreateListing() {
     try {
       clearMessages()
       
+      // Image is now required
+      if (!imageFile) {
+        setAttemptedSubmit(true)
+        alert('Please upload an image before creating the listing')
+        return
+      }
+      
       let imageUrl = null
       
-      // Upload image to Cloudinary if selected
-      if (imageFile) {
-        console.log('Starting Cloudinary upload...')
-        imageUrl = await uploadImage(imageFile)
-        console.log('Image URL from Cloudinary:', imageUrl)
-        
-        if (!imageUrl) {
-          alert('Failed to upload image to Cloudinary. Check console for details.')
-          return
-        }
+      // Upload image to Cloudinary
+      console.log('Starting Cloudinary upload...')
+      imageUrl = await uploadImage(imageFile)
+      console.log('Image URL from Cloudinary:', imageUrl)
+      
+      if (!imageUrl) {
+        alert('Failed to upload image to Cloudinary. Check console for details.')
+        return
       }
 
       // Send listing data with imageUrl to backend
@@ -179,14 +185,15 @@ function CreateListing() {
 
             {/* Image Upload */}
             <div className={styles.field}>
-              <label htmlFor="image">Upload Image</label>
+              <label htmlFor="image">Upload Image *</label>
               <input
                 id="image"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                required
               />
-              <p className={styles.hint}>Max 10MB. Supported: JPEG, PNG, WebP, GIF</p>
+              <p className={styles.hint}>Max 10MB. Supported: JPEG, PNG, WebP, GIF. Image is required.</p>
               
               {/* Image Preview */}
               {imagePreview && (
@@ -209,9 +216,10 @@ function CreateListing() {
             {/* Messages */}
             {error && <p className={styles.error}>{error}</p>}
             {success && <p className={styles.successMsg}>{success}</p>}
+            {attemptedSubmit && !imageFile && <p className={styles.error}>⚠️ Please upload an image to create a listing</p>}
 
             {/* Submit */}
-            <button type="submit" disabled={loading || uploading} className={styles.btn}>
+            <button type="submit" disabled={loading || uploading || !imageFile} className={styles.btn}>
               {uploading ? 'Uploading image...' : loading ? 'Creating listing...' : 'Create Listing'}
             </button>
           </form>

@@ -28,6 +28,11 @@ export const listings = {
   getAll: (filters = {}) =>
     api.get('/listings', { params: filters }),
   
+  // Search listings with advanced filters
+  // Parameters: q (query), category, minPrice, maxPrice, page, limit
+  search: (query, filters = {}) =>
+    api.get('/listings/search', { params: { q: query, ...filters } }),
+  
   // Get single listing by ID
   getById: (id) =>
     api.get(`/listings/${id}`),

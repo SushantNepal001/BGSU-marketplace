@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from './Navbar.module.css'
 
-function Navbar({ onSearch }) {
+function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -21,16 +21,6 @@ function Navbar({ onSearch }) {
           BGSU <span>Swap&Shop</span>
         </span>
       </Link>
-
-      {/* Search bar */}
-      <div className={styles.searchWrap}>
-        <span className={styles.searchIcon}>⌕</span>
-        <input
-          type="text"
-          placeholder="Search listings — books, furniture, electronics..."
-          onChange={(e) => onSearch && onSearch(e.target.value)}
-        />
-      </div>
 
       {/* Right side actions */}
       <div className={styles.actions}>
