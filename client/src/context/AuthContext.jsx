@@ -10,7 +10,15 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Check if user is already logged in on page load
     const stored = sessionStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
+    if (stored && stored !== "undefined" && stored !== "null") {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        // Clear corrupted session values to prevent app crash on boot.
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("token");
+      }
+    }
     setLoading(false);
   }, []);
 

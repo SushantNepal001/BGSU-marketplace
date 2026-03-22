@@ -4,13 +4,15 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid #f0f0f0;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
   break-inside: avoid;
   margin-bottom: 12px;
 }
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .cardLink {
@@ -20,8 +22,14 @@
 }
 
 /* Image */
-.imgWrap { position: relative; }
-.img     { width: 100%; display: block; object-fit: cover; }
+.imgWrap {
+  position: relative;
+}
+.img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
 .imgPlaceholder {
   height: 140px;
   display: flex;
@@ -42,12 +50,20 @@
   border-radius: var(--radius-sm);
   color: white;
 }
-.badgeSell  { background: var(--orange); }
-.badgeTrade { background: #7c3aed; }
-.badgeFree  { background: #16a34a; }
+.badgeSell {
+  background: var(--orange);
+}
+.badgeTrade {
+  background: #7c3aed;
+}
+.badgeFree {
+  background: #16a34a;
+}
 
 /* Body */
-.body { padding: 10px 12px 12px; }
+.body {
+  padding: 10px 12px 12px;
+}
 
 .priceDefault {
   font-weight: 700;
@@ -86,26 +102,37 @@
 }
 
 .actions {
-  padding: 0 12px 12px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 10px 10px;
 }
 
 .previewBtn {
-  width: 100%;
-  border: 1px solid #d6dde6;
-  background: #f7fafc;
-  color: #102a43;
-  border-radius: 8px;
-  font-size: 12px;
+  border: 0;
+  background: #ff6b00;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 7px 10px;
+  line-height: 1;
+  padding: 8px 14px;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.35);
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .previewBtn:hover {
-  background: #ebf3fb;
+  background: #e65a00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.45);
 }
 
 .previewBtn:disabled {
-  opacity: 0.7;
+  opacity: 0.75;
   cursor: wait;
+  transform: none;
+  box-shadow: none;
 }
